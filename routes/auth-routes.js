@@ -8,8 +8,7 @@ router.get('/login', (req, res) => {
 
 // Auth Logout
 router.get('/logout', (req, res) => {
-  // TODO: Add passport logout
-  res.send('Pretending to log out...')
+  res.logout()
 })
 
 // Authenticate with Google
@@ -24,7 +23,7 @@ router.get(
 )
 
 router.get('/google/callback', passport.authenticate('google'), (req, res) => {
-  res.send('Authenticated')
+  res.send('Authenticated', console.log(req.user))
 })
 
 module.exports = router

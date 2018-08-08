@@ -6,7 +6,19 @@ const RedisStore = require('connect-redis')(session)
 const path = require('path')
 const authRoutes = require('./routes/auth-routes')
 const passport = require('passport')
-const passportSetup = require('./config/passport-setup')
+const mongoose = require('mongoose')
+const cookieSession = require('cookie-session')
+
+require('./models/User')
+require('./services/passport')
+
+mongoose.Promise = global.Promise
+mongoose.connect(
+  `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}${
+    process.env.MONGO_DB
+  }`,
+  { useNewUrlParser: true }
+)
 
 const app = express()
 
@@ -18,14 +30,9 @@ app.use(require('morgan')('combined')) // Logging
 app.use(require('cookie-parser')())
 app.use(require('body-parser').urlencoded({ extended: true })) //
 app.use(
-  session({
-    store: new RedisStore({
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-    }),
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.REDIS_SECRET,
+  cookieSession({
+    maxAge: 30 * 24 * 60 * 1000,
+    keys: [process.env.COOKIE_KEY],
   })
 )
 
