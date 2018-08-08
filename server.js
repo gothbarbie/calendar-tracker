@@ -2,23 +2,28 @@ require('dotenv').config()
 
 const express = require('express')
 const session = require('express-session')
-const RedisStore = require('connect-redis')(session)
 const path = require('path')
-const authRoutes = require('./routes/auth-routes')
 const passport = require('passport')
 const mongoose = require('mongoose')
 const cookieSession = require('cookie-session')
 
 require('./models/User')
+require('./models/Calendar')
 require('./services/passport')
+
+const mongodbUri = `mongodb://${process.env.MONGO_USER}:${
+  process.env.MONGO_PASSWORD
+}@ds115592.mlab.com:15592/calendar-tracker`
 
 mongoose.Promise = global.Promise
 mongoose.connect(
-  `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}${
-    process.env.MONGO_DB
-  }`,
+  mongodbUri,
   { useNewUrlParser: true }
 )
+
+const db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'))
+db.on('open', () => console.log('Successfully connected to MongoDB'))
 
 const app = express()
 
@@ -40,7 +45,8 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 // ROUTES
-app.use('/auth', authRoutes)
+app.use('/auth', require('./routes/auth-routes'))
+app.use('/calendar', require('./routes/calendar-routes'))
 
 app.get('/', (req, res) => res.render('home', { user: req.user }))
 
