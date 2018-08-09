@@ -39,13 +39,12 @@ passport.use(
         const user = await new User({
           googleId: profile.id,
           displayName: profile.displayName,
+          accessToken,
+          refreshToken,
         })
 
         // app.session.accessToken = accessToken
-        console.log('session:', app.session)
-
         user.save()
-
         done(null, user)
       } catch (err) {
         console.error(err)

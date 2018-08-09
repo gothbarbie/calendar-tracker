@@ -6,6 +6,7 @@ const userSchema = new Schema({
   displayName: String,
   calendarId: String,
   accessToken: String,
+  refreshToken: String,
   lastFetchAt: { type: Date },
 })
 

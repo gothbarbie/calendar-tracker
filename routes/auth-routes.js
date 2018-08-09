@@ -32,12 +32,9 @@ router.get('/google/callback', passport.authenticate('google'), (req, res) => {
 
   // fetch new items
 
-  const calendar = new gcal.GoogleCalendar(req.session.accessToken)
-
-  console.log(req.session)
+  const calendar = new gcal.GoogleCalendar(req.user.accessToken)
 
   const date = new Date()
-
   const today = date.toISOString()
   date.setDate(date.getDate() - 30)
   const minimum = date.toISOString()
